@@ -11,9 +11,17 @@ router.post('/', validateUser, (req, res) => {
     })
 });
 
-// router.post('/:id/posts', (req, res) => {
-
-// });
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+    db.insert(req.body)
+    .then(post => {
+        res.status(201).json(post)
+    })
+    .catch(error => {
+        console.log(error)
+        res.status(500).json({ message: 'Error adding post' })
+    })
+   
+});
 
 router.get('/', (req, res) => {
     db.get(req.query)
@@ -26,9 +34,17 @@ router.get('/', (req, res) => {
     })
 });
 
-// router.get('/:id', (req, res) => {
-
-// });
+router.get('/:id', validateUserId, (req, res) => {
+    const id = req.params.id
+    db.getById(id)
+    .then(user => {
+        res.status(200).json(user);
+    })
+    .catch(error => {
+        console.log(error)
+        res.status(500).json({ message: 'Error retrieving user.' })
+    })
+});
 
 router.get('/:id/posts', validateUserId, (req, res) => {
     const id = req.user.id
@@ -54,9 +70,18 @@ router.delete('/:id', validateUserId, (req, res) => {
     })
 });
 
-// router.put('/:id', (req, res) => {
-
-// });
+router.put('/:id', validateUserId, (req, res) => {
+    const id = req.params.id;
+    const changes = req.body;
+    db.update(id, changes)
+        .then(post => {
+            res.status(201).json(post)
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'Error updating user' })
+        })
+});
 
 //custom middleware
 
